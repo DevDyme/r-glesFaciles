@@ -1,21 +1,13 @@
 <?php
-require 'config.php';
+// Connexion à la base de données
+$db = new PDO('mysql:host=localhost;dbname=gestion_jeux', 'root', '');
 
-// Récupérer toutes les règles pour les afficher
-$regles = $pdo->query("SELECT * FROM regles_jeux ORDER BY date_creation DESC")->fetchAll(PDO::FETCH_ASSOC);
+// Requête pour récupérer les règles
+$query = $db->query('SELECT nom_jeu, description FROM regles_jeux');
 
-// Fonction pour tronquer les descriptions après un certain nombre de mots
-function truncateWords($text, $limit)
-{
-    $words = explode(' ', $text);
-    if (count($words) > $limit) {
-        return implode(' ', array_slice($words, 0, $limit)) . '...';
-    }
-    return $text;
-}
-
+// Récupération des résultats
+$regles = $query->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -48,16 +40,12 @@ function truncateWords($text, $limit)
             }
         }
 
-        /* Ajuster le style de la modale pour une apparence plus large et horizontale */
-
-
         .modal-body p {
             font-size: 1.1rem;
             line-height: 1.5;
             white-space: pre-wrap; /* Conserver les sauts de ligne */
         }
 
-        /* Style personnalisé pour le bouton "FERMER" */
         .btn-close-custom {
             background-color: transparent;
             border: none;
@@ -76,6 +64,7 @@ function truncateWords($text, $limit)
     </style>
 </head>
 <body>
+
 <!-- Menu de navigation -->
 <?php include("navBar.php"); ?>
 
@@ -90,7 +79,7 @@ function truncateWords($text, $limit)
                         <h5 class="card-title"><?= htmlspecialchars($regle['nom_jeu']) ?></h5>
 
                         <p class="card-text">
-                            <!-- Aperçu limité à 70 caractères -->
+                            <!-- Aperçu limité à 40 caractères -->
                             <span class="description-short"><?= htmlspecialchars(substr($regle['description'], 0, 40)) ?>...</span>
                         </p>
 
@@ -140,6 +129,9 @@ function truncateWords($text, $limit)
 </script>
 
 <!-- Footer -->
-<?php include('footer.php') ?>
+<?php include('footer.php'); ?>
+
+
 </body>
 </html>
+

@@ -1,28 +1,38 @@
 <?php
 session_start();
-require 'config.php';  // Connexion à la base de données
+require 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];  // Récupère le nom d'utilisateur
-    $password = $_POST['password'];  // Récupère le mot de passe
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $role = $_POST['role']; // Peut être 'admin' ou 'utilisateur'
 
-    // Prépare la requête SQL pour récupérer l'administrateur
-    $stmt = $pdo->prepare("SELECT * FROM administrateurs WHERE username = ?");
-    $stmt->execute([$username]);
-    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($role == 'admin') {
+        // Authentification pour les administrateurs
+        $stmt = $pdo->prepare("SELECT * FROM administrateurs WHERE username = ?");
+        $stmt->execute([$username]);
+        $admin = $stmt->fetch();
 
-    // Vérifie si l'administrateur existe
-    if ($admin) {
-        // Vérification du mot de passe avec password_verify
-        if (password_verify($password, $admin['password'])) {
-            $_SESSION['admin'] = $username;  // Démarre la session
-            header("Location: admin.php");  // Redirige vers la page d'administration
+        if ($admin && password_verify($password, $admin['password'])) {
+            $_SESSION['admin'] = $admin['id']; // Stocke l'ID de l'administrateur dans la session
+            header("Location: admin.php");
             exit();
         } else {
-            $error = "Mot de passe incorrect.";
+            $error = "Nom d'utilisateur ou mot de passe incorrect pour l'administrateur";
         }
     } else {
-        $error = "Nom d'utilisateur incorrect.";
+        // Authentification pour les utilisateurs
+        $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE username = ?");
+        $stmt->execute([$username]);
+        $user = $stmt->fetch();
+
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user'] = $user['id']; // Stocke l'ID de l'utilisateur dans la session
+            header("Location: user_view.php"); // Redirection vers la page de consultation des règles de jeu
+            exit();
+        } else {
+            $error = "Nom d'utilisateur ou mot de passe incorrect pour l'utilisateur";
+        }
     }
 }
 ?>
@@ -30,51 +40,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta name="title" content="Règles Facile - Login">
-    <meta name="description" content="Découvrez des règles, gérez vos jeux et plongez dans l'univers passionnant des jeux de société.">
-    <meta name="keywords" content="jeux, jeux de sociétés, règles, règles facile, julien dyme, Julien Dyme,Dyme">
-    <meta name="robots" content="index, follow">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="language" content="French">
-    <meta name="revisit-after" content="7 days">
-    <meta name="author" content="Julien Dyme">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Règles Facile - Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion</title>
     <link href="bootstrap/bootstrap.css" rel="stylesheet">
 </head>
 <body>
-<!-- Menu de navigation -->
-<?php include("navBar.php"); ?>
-<div class="container mt-5">
+
+<?php include('navBar.php') ?>
+<div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-4">
-            <h2>Connexion Admin</h2>
-
-            <!-- Affichage du message d'erreur si la connexion échoue -->
-            <?php if (isset($error)) : ?>
-                <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-            <?php endif; ?>
-
-            <!-- Formulaire de connexion -->
-            <form method="POST" action="login.php">
-                <div class="mb-3">
-                    <label for="username" class="form-label">Nom d'utilisateur</label>
-                    <input type="text" name="username" id="username" class="form-control" required>
+        <div class="col-lg-4 col-md-6 col-sm-8">
+            <div class="card mt-5">
+                <div class="card-header text-center">
+                    <h2>Connexion</h2>
                 </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Mot de passe</label>
-                    <input type="password" name="password" id="password" class="form-control" required>
+                <div class="card-body">
+                    <?php if (isset($error)) { ?>
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo $error; ?>
+                        </div>
+                    <?php } ?>
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Nom d'utilisateur :</label>
+                            <input type="text" class="form-control" name="username" id="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mot de passe :</label>
+                            <input type="password" class="form-control" name="password" id="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Rôle :</label>
+                            <select class="form-select" name="role" id="role">
+                                <option value="admin">Administrateur</option>
+                                <option value="utilisateur">Utilisateur</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn btn-primary">Connexion</button>
-
-                <a href="index.php" class="btn btn-primary ">Retour à l'accueil</a> <!-- Lien vers la page d'accueil -->
-            </form>
+            </div>
         </div>
     </div>
 </div>
-
-<!-- Footer -->
 <?php include('footer.php') ?>
-
 </body>
 </html>

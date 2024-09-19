@@ -7,21 +7,24 @@
         text-align: center;
         padding: 20px 0;
 
-        display : table-row;
+        display: table-row;
         height: 30px;
     }
+
     html, body {
         height: 100%;
-        margin: 0; padding: 0;
+        margin: 0;
+        padding: 0;
     }
+
     body {
-        display : table;
+        display: table;
         width: 100%;
     }
 </style>
 <footer class="footer">
     <?php
-    include("refreshPage.php");?>
+    include("refreshPage.php"); ?>
     <p>&copy; 2024 Julien Dyme, Règles Facile. Tous droits réservés.</p>
 </footer>
 

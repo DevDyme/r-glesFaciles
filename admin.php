@@ -46,19 +46,22 @@ if (isset($_GET['edit'])) {
 
 $regles = $pdo->query("SELECT * FROM regles_jeux ORDER BY date_creation DESC")->fetchAll(PDO::FETCH_ASSOC);
 
-function truncateWords($text, $limit) {
+function truncateWords($text, $limit)
+{
     $words = explode(' ', $text);
     if (count($words) > $limit) {
         return implode(' ', array_slice($words, 0, $limit)) . '...';
     }
     return $text;
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta name="title" content="Règles Facile - Admin">
-    <meta name="description" content="Découvrez des règles, gérez vos jeux et plongez dans l'univers passionnant des jeux de société.">
+    <meta name="description"
+          content="Découvrez des règles, gérez vos jeux et plongez dans l'univers passionnant des jeux de société.">
     <meta name="keywords" content="jeux, jeux de sociétés, règles, règles facile, julien dyme, Julien Dyme,Dyme">
     <meta name="robots" content="index, follow">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -75,17 +78,20 @@ function truncateWords($text, $limit) {
             display: flex;
             flex-direction: column;
         }
+
         /* Fond sombre pour le titre et les descriptions */
 
-        .btn-primary2{
+        .btn-primary2 {
             background-color: #2c3e50;
             color: white;
-            border-color:  #2c3e50;
+            border-color: #2c3e50;
         }
-        .btn-primary2:hover, .btn-primary2:active ,.btn-primary2:focus{
+
+        .btn-primary2:hover, .btn-primary2:active, .btn-primary2:focus {
             background-color: white;
             border-color: #2c3e50;
         }
+
         .container {
             flex: 1;
         }
@@ -176,11 +182,13 @@ function truncateWords($text, $limit) {
 
         <div class="mb-3">
             <label for="nom_jeu" class="form-label">Nom du jeu</label>
-            <input type="text" name="nom_jeu" id="nom_jeu" class="form-control" value="<?= isset($regle) ? htmlspecialchars($regle['nom_jeu']) : ''; ?>" required>
+            <input type="text" name="nom_jeu" id="nom_jeu" class="form-control"
+                   value="<?= isset($regle) ? htmlspecialchars($regle['nom_jeu']) : ''; ?>" required>
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
-            <textarea name="description" id="description" class="form-control" rows="3" required><?= isset($regle) ? htmlspecialchars($regle['description']) : ''; ?></textarea>
+            <textarea name="description" id="description" class="form-control" rows="3"
+                      required><?= isset($regle) ? htmlspecialchars($regle['description']) : ''; ?></textarea>
         </div>
         <button type="submit" class="btn btn-primary"><?= isset($_GET['edit']) ? 'Modifier' : 'Ajouter'; ?></button>
         <?php if (isset($_GET['edit'])): ?>
@@ -201,19 +209,21 @@ function truncateWords($text, $limit) {
             </tr>
             </thead>
             <?php foreach ($regles as $regle): ?>
-            <tr>
+                <tr>
                     <td><?= htmlspecialchars($regle['nom_jeu']) ?></td>
                     <td>
                         <span class="description-short"><?= htmlspecialchars(truncateWords($regle['description'], 15)) ?></span>
                         <span class="description-complete"><?= nl2br(htmlspecialchars($regle['description'])) ?></span>
-                        <br><button class="btn-description-toggle mt-1 voir-plus">Voir plus</button>
+                        <br>
+                        <button class="btn-description-toggle mt-1 voir-plus">Voir plus</button>
                         <button class="btn-description-toggle mt-1 voir-moins" style="display:none;">Voir moins</button>
                     </td>
                     <td>
                         <a href="admin.php?edit=<?= $regle['id'] ?>" class="btn m-1 btn-warning">Modifier</a>
-                        <a href="admin.php?delete=<?= $regle['id'] ?>" class="btn m-1  btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette règle ?')">Supprimer</a>
+                        <a href="admin.php?delete=<?= $regle['id'] ?>" class="btn m-1  btn-danger"
+                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette règle ?')">Supprimer</a>
                     </td>
-            </tr>
+                </tr>
             <?php endforeach; ?>
         </table>
     </div>
@@ -221,7 +231,7 @@ function truncateWords($text, $limit) {
 
 <script>
     document.querySelectorAll('.voir-plus').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const parent = this.closest('td');
             parent.querySelector('.description-short').style.display = 'none';
             parent.querySelector('.description-complete').style.display = 'inline';
@@ -231,7 +241,7 @@ function truncateWords($text, $limit) {
     });
 
     document.querySelectorAll('.voir-moins').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const parent = this.closest('td');
             parent.querySelector('.description-short').style.display = 'inline';
             parent.querySelector('.description-complete').style.display = 'none';
@@ -242,8 +252,7 @@ function truncateWords($text, $limit) {
 </script>
 
 
-
 <!-- Footer -->
-<?php include ('footer.php')?>
+<?php include('footer.php') ?>
 </body>
 </html>

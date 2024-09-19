@@ -4,6 +4,7 @@
         margin-top: 10px;
         margin-bottom: 5px;
     }
+
     @media (max-width: 576px) {
         .refresh-button {
             margin-top: 10px;

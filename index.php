@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
     <meta name="title" content="Règles Facile">
-    <meta name="description" content="Découvrez des règles, gérez vos jeux et plongez dans l'univers passionnant des jeux de société.">
+    <meta name="description"
+          content="Découvrez des règles, gérez vos jeux et plongez dans l'univers passionnant des jeux de société.">
     <meta name="keywords" content="jeux, jeux de sociétés, règles, règles facile, julien dyme, Julien Dyme,Dyme">
     <meta name="robots" content="index, follow">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -23,7 +24,7 @@
     <div>
         <h1>Bienvenue dans le monde des Jeux de Société</h1>
         <p>Découvrez des règles, gérez vos jeux et plongez dans l'univers passionnant des jeux de société.</p>
-        <a href="rules.php" class="btn btn-light btn-lg text-primary">Voir les règles</a>
+        <a href="login.php" class="btn btn-light btn-lg text-primary">Voir les règles</a>
     </div>
 </div>
 
