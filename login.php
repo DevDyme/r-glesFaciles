@@ -73,8 +73,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="mb-3">
                             <label for="role" class="form-label">Rôle :</label>
                             <select class="form-select" name="role" id="role">
+                                <option value="utilisateur">Utilisateur Classique</option>
                                 <option value="admin">Administrateur</option>
-                                <option value="utilisateur">Utilisateur</option>
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Se connecter</button>
