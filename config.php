@@ -2,8 +2,8 @@
 // Informations de connexion à la base de données
 $host = "localhost";      // Nom de l'hôte
 $dbname = "gestion_jeux"; // Nom de la base de données
-$username = "juliendb";   // Nom d'utilisateur de la base de données
-$password = "juliendb";   // Mot de passe de la base de données
+$username = "admin";   // Nom d'utilisateur de la base de données
+$password = "admin";   // Mot de passe de la base de données
 
 try {
     // Crée une nouvelle instance PDO pour se connecter à la base de données

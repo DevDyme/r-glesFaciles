@@ -57,8 +57,8 @@ $administrateurs = $pdo->query("SELECT * FROM administrateurs ORDER BY id DESC")
     <link href="bootstrap/bootstrap.css" rel="stylesheet">
 </head>
 <body>
+<?php include('navBar.php'); ?>
 <div class="container mt-5">
-    <?php include('navBar.php'); ?>
 
     <h2>Gestion des administrateurs</h2>
 
