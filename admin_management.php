@@ -67,6 +67,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 
+if (isset($_GET['switchRole']) && isset($_GET['from'])) {
+    $id = $_GET['switchRole'];
+    $from = $_GET['from'];
+
+    if ($from == 'utilisateur') {
+        // Récupérer les informations de l'utilisateur
+        $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE id = ?");
+        $stmt->execute([$id]);
+        $utilisateur = $stmt->fetch();
+
+        // Ajouter l'utilisateur à la table administrateurs
+        $stmt = $pdo->prepare("INSERT INTO administrateurs (username, password) VALUES (?, ?)");
+        $stmt->execute([$utilisateur['username'], $utilisateur['password']]);
+
+        // Supprimer l'utilisateur de la table utilisateurs
+        $stmt = $pdo->prepare("DELETE FROM utilisateurs WHERE id = ?");
+        $stmt->execute([$id]);
+    } elseif ($from == 'admin') {
+        // Récupérer les informations de l'administrateur
+        $stmt = $pdo->prepare("SELECT * FROM administrateurs WHERE id = ?");
+        $stmt->execute([$id]);
+        $admin = $stmt->fetch();
+
+        // Ajouter l'administrateur à la table utilisateurs
+        $stmt = $pdo->prepare("INSERT INTO utilisateurs (username, password) VALUES (?, ?)");
+        $stmt->execute([$admin['username'], $admin['password']]);
+
+        // Supprimer l'administrateur de la table administrateurs
+        $stmt = $pdo->prepare("DELETE FROM administrateurs WHERE id = ?");
+        $stmt->execute([$id]);
+    }
+
+    header("Location: admin_management.php");
+    exit();
+}
+
+
+
 if (isset($_GET['delete']) && isset($_GET['type'])) {
     $id = $_GET['delete'];
     if ($_GET['type'] == 'utilisateur') {
@@ -108,16 +146,18 @@ $utilisateurs = $pdo->query("SELECT * FROM utilisateurs")->fetchAll();
 </head>
 <body>
 
-<?php include('navBar.php') ?>
+<?php include('navBar.php')  ?>
 
 <div class="container">
     <header class="my-4 text-center">
         <h1>Gestion des Administrateurs et Utilisateurs</h1>
-        <nav class="d-flex justify-content-center mb-4">
-            <a href="admin.php" class="btn btn-secondary me-2">Retour à l'admin</a>
-            <a href="logout.php" class="btn btn-danger">Déconnexion</a>
-        </nav>
+        <div class="d-flex justify-content-center">
+            <a href="admin.php" class="btn btn-secondary m-1">Retour à l'admin</a>
+            <a href="logout.php" class="btn btn-danger m-1">Déconnexion</a>
+        </div>
     </header>
+
+
 
     <div class="row">
         <!-- Colonne Administrateurs -->
@@ -154,21 +194,24 @@ $utilisateurs = $pdo->query("SELECT * FROM utilisateurs")->fetchAll();
                 </div>
                 <div class="card-body">
                     <ul class="list-group">
-                        <?php foreach ($admins as $admin) { ?>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <?php echo htmlspecialchars($admin['username']); ?>
-                                <div>
-                                    <a href="?edit=<?php echo $admin['id']; ?>&type=admin"
-                                       class="btn btn-warning btn-sm">Modifier</a>
-                                    <a href="?delete=<?php echo $admin['id']; ?>&type=admin"
-                                       class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet administrateur ?');">Supprimer</a>
-                                </div>
-                            </li>
+                        <?php if (!empty($admins)) { ?>
+                            <?php foreach ($admins as $admin) { ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <?php echo htmlspecialchars($admin['username']); ?> (Rôle : Administrateur)
+                                    <div>
+                                        <a href="?edit=<?php echo $admin['id']; ?>&type=admin" class="btn btn-warning btn-sm">Modifier</a>
+                                        <a href="?switchRole=<?php echo $admin['id']; ?>&from=admin" class="btn btn-info btn-sm">Changer de rôle</a>
+                                        <a href="?delete=<?php echo $admin['id']; ?>&type=admin" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet administrateur ?');">Supprimer</a>
+                                    </div>
+                                </li>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <li class="list-group-item">Aucun administrateur trouvé.</li>
                         <?php } ?>
                     </ul>
                 </div>
             </div>
+
         </div>
 
         <!-- Colonne Utilisateurs -->
@@ -199,7 +242,7 @@ $utilisateurs = $pdo->query("SELECT * FROM utilisateurs")->fetchAll();
             </div>
 
             <!-- Liste des utilisateurs -->
-            <div class="card card-custom2">
+            <div class="card">
                 <div class="card-header">
                     <h2>Liste des utilisateurs</h2>
                 </div>
@@ -207,13 +250,11 @@ $utilisateurs = $pdo->query("SELECT * FROM utilisateurs")->fetchAll();
                     <ul class="list-group">
                         <?php foreach ($utilisateurs as $utilisateur) { ?>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <?php echo htmlspecialchars($utilisateur['username']); ?>
+                                <?php echo htmlspecialchars($utilisateur['username']); ?> (Rôle : Utilisateur)
                                 <div>
-                                    <a href="?edit=<?php echo $utilisateur['id']; ?>&type=utilisateur"
-                                       class="btn btn-warning btn-sm">Modifier</a>
-                                    <a href="?delete=<?php echo $utilisateur['id']; ?>&type=utilisateur"
-                                       class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Supprimer</a>
+                                    <a href="?edit=<?php echo $utilisateur['id']; ?>&type=utilisateur" class="btn btn-warning btn-sm">Modifier</a>
+                                    <a href="?switchRole=<?php echo $utilisateur['id']; ?>&from=utilisateur" class="btn btn-info btn-sm">Changer de rôle</a>
+                                    <a href="?delete=<?php echo $utilisateur['id']; ?>&type=utilisateur" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Supprimer</a>
                                 </div>
                             </li>
                         <?php } ?>
